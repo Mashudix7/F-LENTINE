@@ -13,7 +13,7 @@ const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window
 // ============================
 const CONFIG = {
     password: 'FebyZahara',
-    typingSpeed: 2,          // ms per character (fast)
+    typingSpeed: 20,          // ms per character (fast)
     slowTypingSpeed: 35,      // ms for important words
     particleDensity: isMobile ? 25 : 50,
     heartCircleCount: 18,     // hearts in final circle
