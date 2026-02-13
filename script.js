@@ -4,15 +4,27 @@
    ============================================ */
 
 // ============================
+// MOBILE DETECTION & ADAPTIVE
+// ============================
+const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth <= 768;
+
+// ============================
 // CONFIGURATION & CONSTANTS
 // ============================
 const CONFIG = {
     password: 'FebyZahara',
     typingSpeed: 2,          // ms per character (fast)
     slowTypingSpeed: 35,      // ms for important words
-    particleDensity: 50,      // number of particles
+    particleDensity: isMobile ? 25 : 50,
     heartCircleCount: 18,     // hearts in final circle
     heartCircleRadius: 120,   // radius of heart circle
+    // Mobile-adaptive limits
+    clickBurstMin: isMobile ? 3 : 5,
+    clickBurstMax: isMobile ? 6 : 10,
+    confettiCount: isMobile ? 12 : 25,
+    fireworkBursts: isMobile ? 3 : 5,
+    fireworkParticles: isMobile ? 8 : 15,
+    finalParticles: isMobile ? 15 : 30,
 };
 
 // Valentine letter content — static text
@@ -294,13 +306,19 @@ function bloomRoses() {
 }
 
 // ============================
-// 4. CLICK BURST HEARTS
+// 4. CLICK BURST HEARTS (throttled)
 // ============================
+let lastClickBurst = 0;
 document.addEventListener('click', (e) => {
     if (currentScene === 'lock' || currentScene === 'envelope') return;
 
+    // Throttle: max one burst per 100ms
+    const now = performance.now();
+    if (now - lastClickBurst < 100) return;
+    lastClickBurst = now;
+
     const hearts = ['💗', '💕', '💖', '💘', '🌸', '✨'];
-    const count = Math.floor(randomRange(5, 10));
+    const count = Math.floor(randomRange(CONFIG.clickBurstMin, CONFIG.clickBurstMax));
 
     for (let i = 0; i < count; i++) {
         const heart = document.createElement('span');
@@ -323,13 +341,60 @@ document.addEventListener('click', (e) => {
 // ============================
 // 5. PARTICLE RAIN (Canvas)
 // ============================
+// ============================
+// Canvas resize (debounced)
+// ============================
+let resizeTimer;
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 }
 
 resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resizeCanvas, 150);
+});
+
+// ============================
+// Pre-render emoji to offscreen canvasses (HUGE perf win)
+// Avoids expensive ctx.fillText(emoji) every frame
+// ============================
+const EMOJI_LIST = ['🌸', '💗', '✨'];
+const EMOJI_SIZES = isMobile ? [12, 14, 16, 18] : [12, 14, 16, 18, 20];
+const emojiCache = {}; // key: `${emoji}_${size}` -> offscreenCanvas
+
+function buildEmojiCache() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2); // cap at 2x for perf
+    EMOJI_LIST.forEach(emoji => {
+        EMOJI_SIZES.forEach(size => {
+            const key = `${emoji}_${size}`;
+            const dim = Math.ceil(size * 1.5);
+            const oc = document.createElement('canvas');
+            oc.width = dim * dpr;
+            oc.height = dim * dpr;
+            const octx = oc.getContext('2d');
+            octx.scale(dpr, dpr);
+            octx.font = `${size}px serif`;
+            octx.textAlign = 'center';
+            octx.textBaseline = 'middle';
+            octx.fillText(emoji, dim / 2, dim / 2);
+            emojiCache[key] = { canvas: oc, dim };
+        });
+    });
+}
+buildEmojiCache();
+
+// Snap a size to the nearest cached size
+function snapSize(s) {
+    let closest = EMOJI_SIZES[0];
+    let minDiff = Math.abs(s - closest);
+    for (let i = 1; i < EMOJI_SIZES.length; i++) {
+        const diff = Math.abs(s - EMOJI_SIZES[i]);
+        if (diff < minDiff) { closest = EMOJI_SIZES[i]; minDiff = diff; }
+    }
+    return closest;
+}
 
 class Particle {
     constructor() {
@@ -343,6 +408,7 @@ class Particle {
         this.x = randomRange(0, canvas.width);
         this.y = randomRange(-50, -200);
         this.size = randomRange(12, 20);
+        this.snappedSize = snapSize(this.size);
         this.speed = randomRange(0.5, 1.6);           // slower, gentler fall
         this.angle = randomRange(0, Math.PI * 2);
         this.angleSpeed = randomRange(-0.003, 0.003);  // very slow rotation
@@ -350,6 +416,8 @@ class Particle {
         this.wobbleFreq = randomRange(0.008, 0.02);    // slow sway frequency
         this.opacity = randomRange(0.4, 0.85);
         this.time = randomRange(0, 200);               // offset so particles don't sync
+        // Cache lookup
+        this.cacheKey = `${this.emoji}_${this.snappedSize}`;
     }
 
     update() {
@@ -365,14 +433,15 @@ class Particle {
     }
 
     draw() {
+        const cached = emojiCache[this.cacheKey];
+        if (!cached) return;
+
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
         ctx.globalAlpha = this.opacity;
-        ctx.font = `${this.size}px serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(this.emoji, 0, 0);
+        // drawImage from pre-rendered cache — 10-50x faster than fillText
+        ctx.drawImage(cached.canvas, -cached.dim / 2, -cached.dim / 2, cached.dim, cached.dim);
         ctx.restore();
     }
 }
@@ -396,10 +465,10 @@ function animateParticles() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    particles.forEach(p => {
-        p.update();
-        p.draw();
-    });
+    for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw();
+    }
 
     requestAnimationFrame(animateParticles);
 }
@@ -440,15 +509,16 @@ tarotCards.forEach(card => {
 
 function createConfetti(x, y) {
     const colors = ['#FF69B4', '#FF1493', '#FFB6C1', '#B19CD9', '#FFD700', '#FF6B6B'];
+    const count = CONFIG.confettiCount;
 
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < count; i++) {
         const piece = document.createElement('div');
         piece.className = 'confetti';
         piece.style.left = `${x}px`;
         piece.style.top = `${y}px`;
         piece.style.background = colors[Math.floor(Math.random() * colors.length)];
 
-        const angle = (Math.PI * 2 * i) / 25;
+        const angle = (Math.PI * 2 * i) / count;
         const dist = randomRange(50, 150);
         piece.style.setProperty('--cx', `${Math.cos(angle) * dist}px`);
         piece.style.setProperty('--cy', `${Math.sin(angle) * dist}px`);
@@ -549,7 +619,7 @@ function startFinalParticles() {
     particlesActive = true;
     particles = [];
 
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < CONFIG.finalParticles; i++) {
         const p = new Particle();
         p.y = randomRange(0, canvas.height);
         p.opacity = randomRange(0.2, 0.5);
@@ -615,13 +685,15 @@ document.addEventListener('touchend', (e) => {
 
 function triggerFireworks() {
     const emojis = ['💗', '💖', '💕', '❤️', '🌟', '✨', '🎆', '💫'];
+    const bursts = CONFIG.fireworkBursts;
+    const perBurst = CONFIG.fireworkParticles;
 
-    for (let burst = 0; burst < 5; burst++) {
+    for (let burst = 0; burst < bursts; burst++) {
         setTimeout(() => {
             const cx = randomRange(100, window.innerWidth - 100);
             const cy = randomRange(100, window.innerHeight - 100);
 
-            for (let i = 0; i < 15; i++) {
+            for (let i = 0; i < perBurst; i++) {
                 const spark = document.createElement('span');
                 spark.className = 'click-heart';
                 spark.textContent = emojis[Math.floor(Math.random() * emojis.length)];
@@ -629,7 +701,7 @@ function triggerFireworks() {
                 spark.style.top = `${cy}px`;
                 spark.style.fontSize = `${randomRange(1, 2.5)}rem`;
 
-                const angle = (Math.PI * 2 * i) / 15;
+                const angle = (Math.PI * 2 * i) / perBurst;
                 const dist = randomRange(60, 180);
                 spark.style.setProperty('--bx', `${Math.cos(angle) * dist}px`);
                 spark.style.setProperty('--by', `${Math.sin(angle) * dist}px`);

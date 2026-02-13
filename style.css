@@ -59,6 +59,7 @@ body {
     height: 100%;
     pointer-events: none;
     z-index: 999;
+    contain: layout style size;
 }
 
 /* ---------- Scene Management ---------- */
@@ -124,7 +125,8 @@ body {
     font-size: var(--size);
     opacity: 0;
     animation: floatUp var(--dur) ease-in-out var(--delay) infinite;
-    filter: drop-shadow(0 0 4px rgba(255, 105, 180, 0.3));
+    text-shadow: 0 0 4px rgba(255, 105, 180, 0.3);
+    will-change: transform, opacity;
 }
 
 @keyframes floatUp {
@@ -357,6 +359,7 @@ body {
     position: absolute;
     font-size: 1.5rem;
     animation: sparkleOut 1s ease forwards;
+    will-change: transform, opacity;
 }
 
 /* =============================================
@@ -1514,6 +1517,7 @@ body {
     z-index: 998;
     font-size: 1.2rem;
     animation: clickBurst 0.8s ease forwards;
+    will-change: transform, opacity;
 }
 
 @keyframes clickBurst {
@@ -1537,6 +1541,7 @@ body {
     height: 10px;
     border-radius: 2px;
     animation: confettiFall 1s ease forwards;
+    will-change: transform, opacity;
 }
 
 /* =============================================
@@ -1595,6 +1600,19 @@ body {
 
     .cards-container {
         gap: 12px;
+    }
+
+    /* Simplify glow rings on mobile for less compositing */
+    .deco-ring {
+        box-shadow: 0 0 20px rgba(255, 182, 193, 0.15);
+    }
+
+    /* Reduce backdrop-filter intensity on mobile */
+    .envelope-wrapper,
+    .letter-card,
+    .counter-box {
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
     }
 }
 
