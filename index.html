@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💗 F-LENTINE — For You</title>
+    <meta name="description" content="A special Valentine message, made with love.">
+
+    <!-- Google Fonts: Caveat (handwriting) + Outfit (UI) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Outfit:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ======================== -->
+    <!-- CANVAS: Particle System  -->
+    <!-- ======================== -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- ======================== -->
+    <!-- SECTION 1: LOCK SCREEN   -->
+    <!-- ======================== -->
+    <section id="lock-screen" class="scene active">
+        <!-- Floating hearts background -->
+        <div class="floating-hearts">
+            <span class="fh" style="--delay:0s; --x:10%; --size:1.4rem; --dur:6s">💗</span>
+            <span class="fh" style="--delay:1s; --x:25%; --size:1rem; --dur:8s">💕</span>
+            <span class="fh" style="--delay:2s; --x:40%; --size:1.6rem; --dur:7s">🌸</span>
+            <span class="fh" style="--delay:0.5s; --x:60%; --size:1.2rem; --dur:9s">💖</span>
+            <span class="fh" style="--delay:3s; --x:75%; --size:1rem; --dur:6.5s">✨</span>
+            <span class="fh" style="--delay:1.5s; --x:88%; --size:1.5rem; --dur:7.5s">💗</span>
+            <span class="fh" style="--delay:4s; --x:15%; --size:0.9rem; --dur:8.5s">🌸</span>
+            <span class="fh" style="--delay:2.5s; --x:50%; --size:1.3rem; --dur:7s">💕</span>
+            <span class="fh" style="--delay:3.5s; --x:92%; --size:1.1rem; --dur:6s">💖</span>
+            <span class="fh" style="--delay:0.8s; --x:5%; --size:1.4rem; --dur:9s">✨</span>
+        </div>
+
+        <!-- Decorative glow rings -->
+        <div class="deco-ring ring-1"></div>
+        <div class="deco-ring ring-2"></div>
+
+        <div class="lock-container">
+            <!-- Kawaii Gembok Hati -->
+            <div class="lock-icon" id="lock-icon">
+                <div class="lock-body">
+                    <div class="lock-shackle"></div>
+                    <div class="lock-face">
+                        <div class="lock-keyhole">💗</div>
+                    </div>
+                </div>
+            </div>
+            <h2 class="lock-title">Masukin Passwordnya</h2>
+            <p class="lock-subtitle">Created By Mazz</p>
+            <div class="password-input-wrapper" id="password-wrapper">
+                <input type="text" id="password-input" placeholder="••••••••" autocomplete="off" autofocus>
+                <button id="unlock-btn" class="btn-unlock" aria-label="Unlock">
+                    <span>💖</span>
+                </button>
+            </div>
+            <p class="lock-error" id="lock-error">Wrong password! Try again 💔</p>
+        </div>
+    </section>
+
+    <!-- ======================== -->
+    <!-- SECTION 2: ENVELOPE      -->
+    <!-- ======================== -->
+    <section id="envelope-scene" class="scene">
+        <!-- Floating decorations -->
+        <div class="floating-hearts">
+            <span class="fh" style="--delay:0.3s; --x:8%; --size:1.2rem; --dur:7s">🌸</span>
+            <span class="fh" style="--delay:1.2s; --x:22%; --size:1rem; --dur:8.5s">💕</span>
+            <span class="fh" style="--delay:2.8s; --x:45%; --size:1.5rem; --dur:6.5s">✨</span>
+            <span class="fh" style="--delay:0.7s; --x:65%; --size:1.1rem; --dur:9s">💗</span>
+            <span class="fh" style="--delay:3.2s; --x:80%; --size:1.3rem; --dur:7s">🌸</span>
+            <span class="fh" style="--delay:1.8s; --x:93%; --size:1rem; --dur:8s">💖</span>
+            <span class="fh" style="--delay:4.2s; --x:35%; --size:0.9rem; --dur:7.5s">✨</span>
+            <span class="fh" style="--delay:2.2s; --x:55%; --size:1.4rem; --dur:6s">💕</span>
+        </div>
+
+        <!-- Glow rings -->
+        <div class="deco-ring ring-env-1"></div>
+        <div class="deco-ring ring-env-2"></div>
+
+        <!-- Sparkle dots -->
+        <div class="sparkle-dot sd1"></div>
+        <div class="sparkle-dot sd2"></div>
+        <div class="sparkle-dot sd3"></div>
+        <div class="sparkle-dot sd4"></div>
+        <div class="sparkle-dot sd5"></div>
+
+        <div class="envelope-intro">
+            <p class="for-label">For:</p>
+            <h1 class="recipient-name">Feby Zahara 💗</h1>
+            <p class="by-label">By Mazz</p>
+        </div>
+        <div class="envelope-wrapper" id="envelope-wrapper">
+            <div class="envelope" id="envelope">
+                <!-- Tutup atas amplop -->
+                <div class="envelope-flap"></div>
+                <!-- Wax seal di tutup -->
+                <div class="wax-seal" id="wax-seal">💗</div>
+                <!-- Body amplop  -->
+                <div class="envelope-body"></div>
+                <!-- Surat di dalam amplop -->
+                <div class="letter" id="letter">
+                    <div class="letter-inner" id="letter-inner"></div>
+                </div>
+            </div>
+            <p class="tap-hint" id="tap-hint">Klik 💌</p>
+        </div>
+    </section>
+
+    <!-- ======================== -->
+    <!-- SECTION 3: LETTER        -->
+    <!-- ======================== -->
+    <section id="letter-scene" class="scene">
+        <div class="letter-card" id="letter-card">
+            <div class="letter-header">
+                <span class="letter-date">Valentine's Day 2026</span>
+                <div class="letter-rose" id="rose-1">
+                    <div class="rose">
+                        <div class="petal p1"></div>
+                        <div class="petal p2"></div>
+                        <div class="petal p3"></div>
+                        <div class="petal p4"></div>
+                        <div class="petal p5"></div>
+                        <div class="rose-center"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="letter-content" id="letter-content">
+                <!-- Typing effect fills this -->
+            </div>
+            <div class="letter-footer">
+                <p class="letter-sign">With all my heart,</p>
+                <p class="letter-sign-name">Mazz 💗</p>
+            </div>
+        </div>
+
+        <!-- Roses blooming in corners -->
+        <div class="corner-rose top-left" id="rose-2">
+            <div class="rose">
+                <div class="petal p1"></div>
+                <div class="petal p2"></div>
+                <div class="petal p3"></div>
+                <div class="petal p4"></div>
+                <div class="petal p5"></div>
+                <div class="rose-center"></div>
+            </div>
+        </div>
+        <div class="corner-rose bottom-right" id="rose-3">
+            <div class="rose">
+                <div class="petal p1"></div>
+                <div class="petal p2"></div>
+                <div class="petal p3"></div>
+                <div class="petal p4"></div>
+                <div class="petal p5"></div>
+                <div class="rose-center"></div>
+            </div>
+        </div>
+
+        <!-- Counter -->
+        <div class="counter-box" id="counter-box">
+            <p class="counter-label">Since we met:</p>
+            <span class="counter-infinity">∞</span>
+            <p class="counter-sub">…and every day feels like the first</p>
+        </div>
+
+        <!-- Special button -->
+        <button class="btn-special" id="btn-special">
+            <span>Jangan Dilanjut..</span>
+        </button>
+    </section>
+
+    <!-- ======================== -->
+    <!-- SECTION 4: TAROT CARDS   -->
+    <!-- ======================== -->
+    <section id="cards-scene" class="scene">
+        <h2 class="cards-title">Pilih Kartumu, Tapi Kalo Gamau Yaudah</h2>
+        <p class="cards-subtitle">Seterah Sih, Tapi harus dibuka semua kalau mau lanjut</p>
+        <div class="cards-container">
+            <!-- Card 1: Destiny / Alasan -->
+            <div class="tarot-card" data-card="1">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="card-design">
+                            <span class="card-symbol">🌙</span>
+                            <p class="card-name">Takdir</p>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <h3>Alasan</h3>
+                        <p>Karena senyummu mampu membuat hariku lebih berwarna. Kamu adalah alasan aku percaya
+                            bahwa cinta itu ada.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 2: Heart / Mengapa -->
+            <div class="tarot-card" data-card="2">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="card-design">
+                            <span class="card-symbol">💫</span>
+                            <p class="card-name">Harapan</p>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <h3>Mengapa</h3>
+                        <p>Karena di antara jutaan orang di dunia ini, hatiku memilih untuk pulang kepadamu. Kamu adalah
+                            rumahku.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Card 3: Forever / Harapan -->
+            <div class="tarot-card" data-card="3">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="card-design">
+                            <span class="card-symbol">⭐</span>
+                            <p class="card-name">Selamanya?</p>
+                        </div>
+                    </div>
+                    <div class="card-back">
+                        <h3>Harapan</h3>
+                        <p>Aku berharap kita bisa terus berjalan bersama, melewati setiap musim, sampai waktu tak lagi
+                            menghitung.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="btn-final" id="btn-final">
+            <span>Satu Hal Lagi..</span>
+        </button>
+    </section>
+
+    <!-- ======================== -->
+    <!-- SECTION 5: FINAL SCREEN  -->
+    <!-- ======================== -->
+    <section id="final-scene" class="scene">
+        <div class="final-content" id="final-content">
+            <div class="final-text" id="final-text"></div>
+
+            <!-- Large Blooming Rose -->
+            <div class="big-rose-wrapper" id="big-rose">
+                <div class="big-rose">
+                    <div class="big-petal bp1"></div>
+                    <div class="big-petal bp2"></div>
+                    <div class="big-petal bp3"></div>
+                    <div class="big-petal bp4"></div>
+                    <div class="big-petal bp5"></div>
+                    <div class="big-petal bp6"></div>
+                    <div class="big-petal bp7"></div>
+                    <div class="big-petal bp8"></div>
+                    <div class="big-petal-outer bo1"></div>
+                    <div class="big-petal-outer bo2"></div>
+                    <div class="big-petal-outer bo3"></div>
+                    <div class="big-petal-outer bo4"></div>
+                    <div class="big-rose-core"></div>
+                </div>
+            </div>
+
+            <div class="happy-valentine" id="happy-valentine">Happy Valentine</div>
+
+            <div class="heart-circle" id="heart-circle"></div>
+            <div class="forever-text" id="forever-text">Feby Zahara</div>
+            <p class="created-by" id="created-by">created by mazz</p>
+        </div>
+    </section>
+
+    <!-- ======================== -->
+    <!-- AUDIO PLAYER (Vinyl)     -->
+    <!-- ======================== -->
+    <div class="vinyl-player" id="vinyl-player" title="Play / Pause Music">
+        <div class="vinyl-disc" id="vinyl-disc">
+            <div class="vinyl-label">🎵</div>
+        </div>
+    </div>
+
+    <!-- Audio element -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="assets/music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
