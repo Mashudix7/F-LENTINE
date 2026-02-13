@@ -35,6 +35,7 @@
 html {
     scroll-behavior: smooth;
     overflow: hidden;
+    color-scheme: light;
 }
 
 body {
@@ -46,6 +47,7 @@ body {
     transition: background 1.5s ease;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    -webkit-text-fill-color: initial;
 }
 
 /* ---------- Canvas (Particles) ---------- */
@@ -590,7 +592,9 @@ body {
     font-size: 0.9rem;
     color: #a06080;
     animation: fadeInUp 1s ease 0.5s both;
-    margin-top: 10px;
+    margin-top: 16px;
+    position: relative;
+    z-index: 10;
 }
 
 .tap-hint.hidden {
@@ -606,8 +610,8 @@ body {
     padding: 20px;
     overflow-y: auto;
     justify-content: flex-start;
-    padding-top: 40px;
-    gap: 20px;
+    padding-top: 30px;
+    gap: 16px;
 }
 
 .letter-card {
@@ -616,12 +620,15 @@ body {
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 20px;
-    padding: 32px 28px;
+    padding: 28px 24px;
     max-width: 500px;
     width: 100%;
+    max-height: 70vh;
+    overflow-y: auto;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
     animation: fadeInUp 0.8s var(--transition-smooth);
     position: relative;
+    flex-shrink: 0;
 }
 
 .letter-header {
@@ -943,18 +950,20 @@ body {
     transform: rotateY(180deg);
     box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2);
     text-align: center;
+    justify-content: flex-start;
+    padding-top: 30px;
 }
 
 .card-back h3 {
     font-family: var(--font-hand);
     font-size: 1.5rem;
     color: var(--pink-deep);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .card-back p {
-    font-size: 0.85rem;
-    line-height: 1.6;
+    font-size: 0.82rem;
+    line-height: 1.5;
     color: #5a2040;
 }
 

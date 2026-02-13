@@ -264,6 +264,7 @@ async function typeParagraph(html, index) {
 
                 // Scroll letter content into view
                 letterContent.scrollTop = letterContent.scrollHeight;
+                letterCard.scrollTop = letterCard.scrollHeight;
 
                 setTimeout(typeChar, speed);
             } else {
